@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Types.fs" />
     <Compile Include="Parser.fs" />
+    <Compile Include="Unparser.fs" />
     <Compile Include="Eval.fs" />
     <Compile Include="Lambda.fs" />
     <None Include="App.config" />

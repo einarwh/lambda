@@ -2,9 +2,12 @@ module Lambda
 
 open Types
 open Parser
+open Unparser
 open Eval
 
 open FParsec
+
+open System
 
 let test p str =
     printfn "%s -> " str 
@@ -21,9 +24,12 @@ let testReduce p str =
 let what p str = 
     match run p str with
     | Success(result, _, _)   -> 
-      result |> reduceAll |> termstr
+      result |> reduceAll |> unparse
     | Failure(errorMsg, _, _) -> 
       ":("
+let rec repl () =
+    what expParser (Console.ReadLine ()) |> Console.WriteLine
+    repl ()
 
 [<EntryPoint>]
 let main argv =
@@ -51,6 +57,9 @@ let main argv =
     test expParser sz
     test expParser sz'
     test expParser idIdStr
+
+    //repl ()
+
     //testReduce expParser ssz
 
     0 // return an integer exit code
