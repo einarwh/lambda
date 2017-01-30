@@ -11,7 +11,7 @@ let varNameParser =
 
 let varParser = varNameParser |>> Var
 let lamParser = 
-        pipe2 (pchar 'λ' >>. varNameParser) 
+        pipe2 ((pchar 'λ' <|> pchar '\\') >>. varNameParser) 
               (pchar '.' >>. expParser)
               (fun s e -> Lam (s, e))
 let parParser = between (pchar '(') (pchar ')') expParser

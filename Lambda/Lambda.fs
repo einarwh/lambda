@@ -27,6 +27,7 @@ let what p str =
       result |> reduceAll |> unparse
     | Failure(errorMsg, _, _) -> 
       ":("
+
 let rec repl () =
     what expParser (Console.ReadLine ()) |> Console.WriteLine
     repl ()
@@ -45,21 +46,10 @@ let main argv =
     let idStr = "λx.x"
     let idIdStr = sprintf "%s %s" idStr idStr
 
-    //test expParser zeroStr
-    //test expParser succStr
-
     let sz = sprintf "(%s) %s" succStr zeroStr
     let sz' = sprintf "%s %s" succStr zeroStr
     let ssz = sprintf "(%s) ((%s) %s)" succStr succStr zeroStr
 
-    //test expParser sz
-
-    test expParser sz
-    test expParser sz'
-    test expParser idIdStr
-
-    //repl ()
-
-    //testReduce expParser ssz
+    repl ()
 
     0 // return an integer exit code
