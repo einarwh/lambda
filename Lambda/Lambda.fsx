@@ -96,9 +96,3 @@ let rec repl () =
     | s' -> 
       s' |> what expParser |> Console.WriteLine
     repl ()
-
-let zeroStr = "λf.λx.x"
-let succStr = "λn.λf.λx.f (n f x)"
-
-repl()
-
