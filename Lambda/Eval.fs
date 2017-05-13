@@ -2,6 +2,8 @@ module Eval
 
 open Types
 
+type EvalResult = Reduced of Exp | Normal
+
 let rec subst = function
     | t, s, App (f, a) -> App (subst (t, s, f), subst (t, s, a))
     | t, s, Lam (p, b) ->
@@ -14,13 +16,17 @@ let rec subst = function
         else Var v
 
 let rec reduce = function
-    | App (Lam (p, b), a) -> subst (a, p, b)
-    | App (f, a) -> App (reduce f, reduce a)
-    | Lam (p, b) -> Lam (p, reduce b)
-    | Var v -> Var v
+    | Var v -> Normal
+    | App (Lam (p, b), a) -> Reduced (subst (a, p, b))
+    | App (f, a) ->
+        match reduce f with
+            | Reduced rf -> Reduced (App (rf, a))
+            | _ ->
+                match reduce a with
+                    | Reduced ra -> Reduced (App (f, ra))
+                    | _ -> Normal
+    | Lam (p, b) ->
+        match reduce b with
+            | Reduced b -> Reduced (Lam (p, b))
+            | _ -> Normal
 
-let rec reduceAll t =
-    let res = reduce t
-    if res = t
-    then res
-    else reduceAll res

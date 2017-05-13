@@ -18,15 +18,22 @@ let test p str =
 let testReduce p str =
     printfn "%s -> " str 
     match run p str with
-    | Success(result, _, _)   -> printfn " %A" (result |> reduceAll)
+    | Success(result, _, _)   -> printfn " %A" (result |> reduce)
     | Failure(errorMsg, _, _) -> printfn " %s" errorMsg
+
+let rec runEval x =
+    match reduce x with
+        | Normal -> Console.WriteLine (unparse x)
+        | Reduced rx ->
+            Console.WriteLine (unparse rx)
+            runEval rx
 
 let what p str = 
     match run p str with
     | Success(result, _, _)   -> 
-      result |> reduceAll |> unparse
+      runEval result
     | Failure(errorMsg, _, _) -> 
-      ":("
+      Console.WriteLine ":("
 
 let rec repl () =
     let s = Console.ReadLine()
