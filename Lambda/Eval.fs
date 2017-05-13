@@ -2,7 +2,7 @@ module Eval
 
 open Types
 
-type EvalResult = Reduced of Exp | Normal
+type EvalResult = Next of Exp | Normal
 
 let rec subst = function
     | t, s, App (f, a) -> App (subst (t, s, f), subst (t, s, a))
@@ -17,16 +17,16 @@ let rec subst = function
 
 let rec reduce = function
     | Var v -> Normal
-    | App (Lam (p, b), a) -> Reduced (subst (a, p, b))
+    | App (Lam (p, b), a) -> Next (subst (a, p, b))
     | App (f, a) ->
         match reduce f with
-            | Reduced rf -> Reduced (App (rf, a))
+            | Next rf -> Next (App (rf, a))
             | _ ->
                 match reduce a with
-                    | Reduced ra -> Reduced (App (f, ra))
+                    | Next ra -> Next (App (f, ra))
                     | _ -> Normal
     | Lam (p, b) ->
         match reduce b with
-            | Reduced b -> Reduced (Lam (p, b))
+            | Next b -> Next (Lam (p, b))
             | _ -> Normal
 

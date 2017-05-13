@@ -24,9 +24,9 @@ let testReduce p str =
 let rec runEval x =
     match reduce x with
         | Normal -> Console.WriteLine (unparse x)
-        | Reduced rx ->
-            Console.WriteLine (unparse rx)
-            runEval rx
+        | Next nx ->
+            Console.WriteLine (unparse nx)
+            runEval nx
 
 let what p str = 
     match run p str with
