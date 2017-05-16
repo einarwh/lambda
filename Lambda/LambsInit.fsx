@@ -55,6 +55,57 @@ unparse appExp = appExpString
 unparse (subst (Var "horse", "foo", appExp))
 unparse (subst (Var "horse", "x", appExp))
 
+(* for testing *)
+let get p s = 
+  match run p s with 
+  | Success (e, _, _) -> e
+  | Failure (x, y, z) -> 
+    failwith x
+
+(* 
+    how to parse some string into some Exp?
+
+    hello fparsec, useful parser combinator library
+*)
+
+(*
+    1. string -> Var of string 
+    get varParser "foo" = Var "foo"
+*)
+
+(*
+    2. string -> Lam of string * Exp
+    get lamParser "λx.x" = Lam ("x", Var "x")
+    get lamParser "λa.λb.a" = Lam ("a", Lam ("b", Var "a"))
+*)
+
+(*
+    3. string -> App of Exp * Exp
+    get appParser "x x" = App (Var "x", Var "x")
+    get appParser "a b c" = App (Var "a", Var "b"), Var "c"
+*)
+
+(*
+    beware infinite regress!
+    parse Exp -> parse App (Exp, Exp) -> parse Exp -> parse App (Exp, Exp)...
+*)
+
+(*
+    controlling presedence
+    get appParser "a (b c)" = App (Var "a", App (Var "b", Var "c")) ?
+*)
+
+(* 
+    litmus 
+    get expParser appExpString = 
+    App
+      (App
+         (Lam ("a",Lam ("b",App (App (Var "a",Var "b"),Var "a"))),
+          Lam ("x",Lam ("y",Var "x"))),Var "foo")
+
+    simple test:
+    appExpString = (appExpString |> get expParser |> unparse)
+*)
 
 (*
     reduce (x : Exp) : EvalResult
