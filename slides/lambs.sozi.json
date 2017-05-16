@@ -4,7 +4,7 @@
   "frames": [
     {
       "frameId": "moop",
-      "title": "New frame",
+      "title": "Animal",
       "timeoutMs": 0,
       "timeoutEnable": false,
       "transitionDurationMs": 1000,
@@ -32,10 +32,10 @@
       },
       "cameraStates": {
         "layer1": {
-          "cx": 139.54772875737416,
-          "cy": 127.02969897875396,
-          "width": 75.87810519473298,
-          "height": 56.95045423004242,
+          "cx": 80.7621428417417,
+          "cy": 137.667236488384,
+          "width": 87.8421514322541,
+          "height": 65.9272695780535,
           "opacity": 1,
           "angle": 0,
           "clipped": false,
@@ -60,10 +60,10 @@
       },
       "cameraOffsets": {
         "layer1": {
-          "deltaX": 7.938781003467909,
-          "deltaY": -5.360041011480419,
-          "widthFactor": 1.6924162731100596,
-          "heightFactor": 1.893932428772739,
+          "deltaX": 7.359623615667488,
+          "deltaY": -7.119735557514446,
+          "widthFactor": 1.9592672506437927,
+          "heightFactor": 2.1924635278580635,
           "deltaAngle": 0
         }
       }
