@@ -2,6 +2,24 @@
 
 pchar 'a';;
 
+// Examples, single character
+get (pchar 'a') "a"
+get (pchar 'a') "c"
+
+get lower "a"
+get lower "abc"
+get lower "Abc"
+
+// Examples, multiple characters
+get (many1 lower) "abc" --> char List
+
+// Try to parse Var 
+
+
+
+get (many1 lower |>> (fun cs ))
+
+
 run (pchar 'a') "a";;
 run (pchar 'a') "b";;
 
