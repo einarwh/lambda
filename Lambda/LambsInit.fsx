@@ -43,15 +43,6 @@ unparse appExp
 
 unparse appExp = appExpString
 
-
-(*
-    subst (arg : Exp, s : String, x : Exp) : Exp
-    (Exp * string * Exp -> Exp)
-    look for *free* occurences of variable s within x
-        and replace them with arg
-*)
-
-
 unparse (subst (Var "horse", "foo", appExp))
 unparse (subst (Var "horse", "x", appExp))
 
@@ -106,6 +97,19 @@ let get p s =
     simple test:
     appExpString = (appExpString |> get expParser |> unparse)
 *)
+
+
+
+
+(*
+    subst (arg : Exp, s : String, x : Exp) : Exp
+    (Exp * string * Exp -> Exp)
+    look for *free* occurences of variable s within x
+        and replace them with arg
+*)
+
+
+
 
 (*
     reduce (x : Exp) : EvalResult
