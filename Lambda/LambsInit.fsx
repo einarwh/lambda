@@ -46,8 +46,8 @@ unparse appExp = appExpString
 unparse (subst (Var "horse", "foo", appExp))
 unparse (subst (Var "horse", "x", appExp))
 
-(* for testing *)
-let get p s = 
+(* Parses string s with parser p. *)
+let parse p s = 
   match run p s with 
   | Success (e, _, _) -> e
   | Failure (x, y, z) -> 
@@ -61,19 +61,19 @@ let get p s =
 
 (*
     1. string -> Var of string 
-    get varParser "foo" = Var "foo"
+    parse varParser "foo" = Var "foo"
 *)
 
 (*
     2. string -> Lam of string * Exp
-    get lamParser "λx.x" = Lam ("x", Var "x")
-    get lamParser "λa.λb.a" = Lam ("a", Lam ("b", Var "a"))
+    parse lamParser "λx.x" = Lam ("x", Var "x")
+    parse lamParser "λa.λb.a" = Lam ("a", Lam ("b", Var "a"))
 *)
 
 (*
     3. string -> App of Exp * Exp
-    get appParser "x x" = App (Var "x", Var "x")
-    get appParser "a b c" = App (Var "a", Var "b"), Var "c"
+    parse appParser "x x" = App (Var "x", Var "x")
+    parse appParser "a b c" = App (Var "a", Var "b"), Var "c"
 *)
 
 (*
@@ -83,19 +83,19 @@ let get p s =
 
 (*
     controlling presedence
-    get appParser "a (b c)" = App (Var "a", App (Var "b", Var "c")) ?
+    parse appParser "a (b c)" = App (Var "a", App (Var "b", Var "c")) ?
 *)
 
 (* 
     litmus 
-    get expParser appExpString = 
+    parse expParser appExpString = 
     App
       (App
          (Lam ("a",Lam ("b",App (App (Var "a",Var "b"),Var "a"))),
           Lam ("x",Lam ("y",Var "x"))),Var "foo")
 
     simple test:
-    appExpString = (appExpString |> get expParser |> unparse)
+    appExpString = (appExpString |> parse expParser |> unparse)
 *)
 
 
@@ -109,8 +109,6 @@ let get p s =
 *)
 
 
-
-
 (*
     reduce (x : Exp) : EvalResult
     (Exp -> EvalResult)
@@ -122,8 +120,6 @@ let get p s =
 
     if we don't find one: return Normal
 *)
-
-
 
 
 (*

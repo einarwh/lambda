@@ -26,7 +26,7 @@ let unparse =
 let expParser, expParserRef = createParserForwardedToRef<Exp, unit>()
 
 let varNameParser : Parser<String, unit> = 
-  many1 lower |>> (fun cs -> new String(List.toArray(cs)))
+  many1 lower |>> (List.toArray >> String)
 
 let varParser = varNameParser |>> Var
 
