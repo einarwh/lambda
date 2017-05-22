@@ -1,6 +1,7 @@
 module EvalNotBroken
 
 open Types
+open System
 
 type EvalResult =
     | Next of Exp
@@ -33,10 +34,25 @@ type ConflictResult =
     | Fine
     | Renamed of Exp
 
-let rec uniqueId taken s =
-    if Set.contains s taken
-    then uniqueId taken (s + "x")
-    else s
+let idNum (s : string) =
+    let rec halp i =
+        if i = -1 || not (Char.IsDigit s.[i])
+        then i
+        else halp (i - 1)
+    let stop = s.Length - 1
+    let res = halp stop
+    if res = stop
+    then s, 1
+    else s.[0 .. res], int(s.[res + 1 .. stop])
+
+let uniqueId taken s =
+    let prefix, start = idNum s
+    let rec halp i =
+        let newId = prefix + string(i)
+        if Set.contains newId taken
+        then halp (i + 1)
+        else newId
+    halp (start + 1)
 
 let rename all (t, s, x) =
     let free = freeIds t
