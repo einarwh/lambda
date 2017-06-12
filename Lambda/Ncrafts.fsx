@@ -157,16 +157,28 @@ let varNameParser : Parser<string, unit> =
 let varParser =
   varNameParser |>> Var
 
+let expParser, expParserRef = createParserForwardedToRef<Exp, unit>()
+
 (*
     2. string -> Lam of string * Exp
     parse lamParser "λx.x" = Lam ("x", Var "x")
     parse lamParser "λa.λb.a" = Lam ("a", Lam ("b", Var "a"))
 *)
 
-let lamParser =
+let lamParser = 
   let lp1 = (pchar 'λ') >>. varNameParser
   let lp2 = (pchar '.') >>. expParser
-  pipe2 lp1 lp2 (fun s e -> Lam (s, e))
+  pipe2 lp1 lp2 (fun n e -> Lam (n, e))
+
+let parParser = 
+  between (pchar '(') (pchar ')') expParser
+
+let notAppParser = lamParser <|> parParser <|> varParser
+
+let appParser = 
+  chainl1 notAppParser (pchar ' ' |>> (fun _ f a -> App (f, a)))
+
+expParserRef := appParser
 
 (*
     3. string -> App of Exp * Exp
