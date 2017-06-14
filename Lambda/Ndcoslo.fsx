@@ -54,7 +54,7 @@ parse expParser "(λx.x)" = Lam ("x", Var "x")
 *)
 
 parse expParser "x x" = App (Var "x", Var "x")
-parse expParser "a b c" = App (Var "a", Var "b"), Var "c"
+parse expParser "a b c" = App (App (Var "a", Var "b"), Var "c")
 
 let appExpString = "(λa.λb.a b a) (λx.λy.x) foo"
 
