@@ -6,14 +6,61 @@
 open System
 open FParsec
 
+(* 
+   type for expressions
+*)
+
+(* 
+    how to parse some string into some Exp?
+
+    hello fparsec, useful parser combinator library
+*)
+
+(*  helper function for applying some parser to a string *)
+
+(*  a recursive parser for expressions *)
+
+(*
+    simple cases: not applications
+*)
+
+(*
+    Var of string 
+*)
+
+parse expParser "foo" = Var "foo"
+
+(*
+    Lam of string * Exp
+*)
+
+parse expParser "λx.x" = Lam ("x", Var "x")
+parse expParser "λa.λb.a" = Lam ("a", Lam ("b", Var "a"))
+
+(*
+    Parentheses for grouping
+*)
+
+parse expParser "(λx.x)" = Lam ("x", Var "x")
+
+(*
+    slightly ickier but not very icky
+    App of Exp * Exp
+*)
+
+(*
+    beware infinite regress!
+    parse Exp -> parse App (Exp, Exp) -> parse Exp -> parse App (Exp, Exp)...
+*)
+
+parse expParser "x x" = App (Var "x", Var "x")
+parse expParser "a b c" = App (Var "a", Var "b"), Var "c"
+
 let appExpString = "(λa.λb.a b a) (λx.λy.x) foo"
 
-type Exp = Var of string | Lam of string * Exp | App of Exp * Exp
+let appExp = App (App (Lam ("a", Lam ("b", (App (App (Var "a", Var "b"), Var "a")))), Lam ("x", Lam ("y", Var "x"))), Var "foo")
 
-
-let lamExp1 = Lam ("a", Lam ("b", (App (App (Var "a", Var "b"), Var "a"))))
-let lamExp2 = Lam ("x", Lam ("y", Var "x"))
-let appExp = App (App (lamExp1, lamExp2), Var "foo")
+parse expParser appExpString = appExp
 
 
 (*
@@ -131,91 +178,5 @@ let rec runEval x =
 
 runEval (appExp)
 runEval (lamExp1)
-
-
-
-(* 
-    how to parse some string into some Exp?
-
-    hello fparsec, useful parser combinator library
-*)
-
-let parse p s = 
-  match run p s with 
-  | Success (e, _, _) -> e
-  | Failure (x, y, z) -> 
-    failwith x
-
-(*
-    1. string -> Var of string 
-    parse varParser "foo" = Var "foo"
-*)
-
-let expParser, expParserRef = createParserForwardedToRef<Exp, unit>()
-
-let varNameParser : Parser<string, unit> =
-  many1 lower |>> (List.toArray >> String)
-
-let varParser = varNameParser |>> Var
-
-(*
-    2. string -> Lam of string * Exp
-    parse lamParser "λx.x" = Lam ("x", Var "x")
-    parse lamParser "λa.λb.a" = Lam ("a", Lam ("b", Var "a"))
-*)
-
-let lamParser : Parser<Exp, unit> = 
-  let p1 = (pchar 'λ') >>. varNameParser
-  let p2 = (pchar '.') >>. expParser
-  pipe2 p1 p2 (fun n e -> Lam (n, e))
-
-let parParser : Parser<Exp, unit> = 
-  between (pchar '(') (pchar ')') expParser
-
-let notAppParser = parParser <|> lamParser <|> varParser
-
-let appParser =
-  chainl1 notAppParser (pchar ' ' |>> (fun _ f a -> App(f, a)))
-
-expParserRef := appParser
-
-
-let parParser = 
-  between (pchar '(') (pchar ')') expParser
-
-let notAppParser = lamParser <|> parParser <|> varParser
-
-let appParser = 
-  chainl1 notAppParser (pchar ' ' |>> (fun _ f a -> App (f, a)))
-
-expParserRef := appParser
-
-(*
-    3. string -> App of Exp * Exp
-    parse appParser "x x" = App (Var "x", Var "x")
-    parse appParser "a b c" = App (Var "a", Var "b"), Var "c"
-*)
-
-(*
-    beware infinite regress!
-    parse Exp -> parse App (Exp, Exp) -> parse Exp -> parse App (Exp, Exp)...
-*)
-
-(*
-    controlling presedence
-    parse appParser "a (b c)" = App (Var "a", App (Var "b", Var "c")) ?
-*)
-
-(* 
-    litmus 
-    parse expParser appExpString = 
-    App
-      (App
-         (Lam ("a",Lam ("b",App (App (Var "a",Var "b"),Var "a"))),
-          Lam ("x",Lam ("y",Var "x"))),Var "foo")
-
-    simple test:
-    appExpString = (appExpString |> get expParser |> unparse)
-*)
 
 
